@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EcoSmart AI - Input</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(to right, #2b5876, #4e4376);
+            color: white;
+            text-align: center;
+        }
+
+        .box {
+            background: white;
+            color: black;
+            width: 400px;
+            margin: 40px auto;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background: #4e4376;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #372f5c;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>⚡ EcoSmart AI - Input</h1>
+
+<div class="box">
+
+    <h3>Inputs</h3>
+
+    <label>Temperature</label>
+    <input id="temp">
+
+    <label>Usage Hours</label>
+    <input id="usage">
+
+    <label>Occupancy</label>
+    <input id="occupancy">
+
+    <h3>Appliances</h3>
+
+    <label>Lights</label>
+    <input id="lights">
+
+    <label>Fans</label>
+    <input id="fans">
+
+    <label>AC</label>
+    <input id="ac">
+
+    <label>TV</label>
+    <input id="tv">
+
+    <label>Fridge</label>
+    <input id="fridge">
+
+    <button onclick="goToResult()">Predict</button>
+    <button onclick="resetData()">🔄 Reset</button>
+
+</div>
+
+<script>
+
+// SAVE & GO
+function goToResult() {
+
+    const data = {
+        temp: temp.value,
+        usage: usage.value,
+        occupancy: occupancy.value,
+        lights: lights.value,
+        fans: fans.value,
+        ac: ac.value,
+        tv: tv.value,
+        fridge: fridge.value
+    };
+
+    localStorage.setItem("energyData", JSON.stringify(data));
+    window.location.href = "result.html";
+}
+
+// LOAD OLD VALUES (ONLY IF EXIST)
+window.onload = function () {
+
+    const data = JSON.parse(localStorage.getItem("energyData"));
+
+    if (data) {
+        temp.value = data.temp || "";
+        usage.value = data.usage || "";
+        occupancy.value = data.occupancy || "";
+        lights.value = data.lights || "";
+        fans.value = data.fans || "";
+        ac.value = data.ac || "";
+        tv.value = data.tv || "";
+        fridge.value = data.fridge || "";
+    }
+};
+
+// RESET FUNCTION
+function resetData() {
+
+    localStorage.removeItem("energyData");
+    localStorage.removeItem("energyResult");
+
+    document.querySelectorAll("input").forEach(input => input.value = "");
+
+}
+
+</script>
+
+</body>
+</html>

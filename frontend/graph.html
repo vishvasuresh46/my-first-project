@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EcoSmart AI - Graphs</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(to right, #2b5876, #4e4376);
+            text-align: center;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        canvas {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            width: 400px !important;
+            height: 250px !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>📊 Graphs</h1>
+
+<div class="container">
+    <canvas id="barChart"></canvas>
+    <canvas id="lineChart"></canvas>
+</div>
+
+<script>
+
+const data = JSON.parse(localStorage.getItem("energyData"));
+const result = JSON.parse(localStorage.getItem("energyResult"));
+
+if (!data || !result) {
+    alert("❌ No data found! Go from Input page.");
+    window.location.href = "index.html";
+}
+
+// BAR CHART
+new Chart(document.getElementById("barChart"), {
+    type: 'bar',
+    data: {
+        labels: ["Lights","Fans","AC","TV","Fridge"],
+        datasets: [{
+            label: "Appliance Usage",
+            data: [
+                data.lights,
+                data.fans,
+                data.ac,
+                data.tv,
+                data.fridge
+            ]
+        }]
+    }
+});
+
+// LINE CHART
+new Chart(document.getElementById("lineChart"), {
+    type: 'line',
+    data: {
+        labels: ["Energy","Bill"],
+        datasets: [{
+            label: "Energy vs Bill",
+            data: [result.prediction, result.bill]
+        }]
+    }
+});
+
+</script>
+
+</body>
+</html>

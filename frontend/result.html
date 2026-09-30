@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EcoSmart AI - Result</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(to right, #2b5876, #4e4376);
+            color: white;
+            text-align: center;
+        }
+
+        .box {
+            background: white;
+            color: black;
+            width: 400px;
+            margin: 40px auto;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background: #4e4376;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>⚡ Energy Result</h1>
+
+<div class="box">
+
+    <div id="result">⏳ Loading...</div>
+    <div id="features"></div>
+
+    <button onclick="goToGraphs()">📊 View Graphs</button>
+
+</div>
+
+<script>
+
+const data = JSON.parse(localStorage.getItem("energyData"));
+
+if (!data) {
+    alert("❌ No input data! Go back.");
+    window.location.href = "index.html";
+}
+
+fetch("http://127.0.0.1:5000/predict_energy", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+        temperature: data.temp,
+        lights: data.lights,
+        fans: data.fans,
+        ac: data.ac,
+        tv: data.tv,
+        fridge: data.fridge,
+        usage_hours: data.usage,
+        occupancy: data.occupancy
+    })
+})
+.then(res => res.json())
+.then(res => {
+
+    document.getElementById("result").innerHTML =
+        `<h3>⚡ Energy: ${res.prediction} <br> 💰 Bill: ₹${res.bill}</h3>`;
+
+    localStorage.setItem("energyResult", JSON.stringify(res));
+
+    loadFeatures();
+})
+.catch(() => {
+    document.getElementById("result").innerHTML = "❌ Backend error";
+});
+
+function loadFeatures() {
+
+    Promise.all([
+        fetch("http://127.0.0.1:5000/fault").then(res=>res.json()),
+        fetch("http://127.0.0.1:5000/optimize").then(res=>res.json()),
+        fetch("http://127.0.0.1:5000/behavior").then(res=>res.json()),
+        fetch("http://127.0.0.1:5000/ev").then(res=>res.json()),
+        fetch("http://127.0.0.1:5000/anomaly", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({usage: 30})
+        }).then(res=>res.json())
+    ])
+    .then(data => {
+
+        document.getElementById("features").innerHTML = `
+            <h3>🚀 Smart Features</h3>
+            ✔ ${data[0].fault} <br>
+            ✔ ${data[1].tips} <br>
+            ✔ ${data[2].behavior} <br>
+            ✔ ${data[3].ev} <br>
+            ✔ ${data[4].status}
+        `;
+    });
+}
+
+function goToGraphs() {
+    window.location.href = "graph.html";
+}
+
+</script>
+
+</body>
+</html>
